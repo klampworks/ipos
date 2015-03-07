@@ -1,0 +1,7 @@
+.PHONY: all install clean
+USE_OCAMLFIND = true
+OCAMLFINDFLAGS  += -syntax bitstring.syntax
+OCAMLPACKS = bitstring bitstring.syntax
+FILES = parse_id3_header
+PROGRAM = ipos
+.DEFAULT: $(OCamlProgram $(PROGRAM), $(FILES))
