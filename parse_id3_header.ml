@@ -20,16 +20,17 @@ let parse_id3_header bits =
     flag_d        : 1; (* Footer present *)
     _             : 4;
     size          : 32 : bigendian
-    } -> { ma_ver = major_version; 
-           mi_ver = minor_version; 
-           flag_a = flag_a; 
-           flag_b = flag_b; 
-           flag_c = flag_c; 
-           flag_d = flag_d; 
-           size = (Int32.to_int size)};;
+    } -> (bits, 
+          { ma_ver = major_version; 
+            mi_ver = minor_version; 
+            flag_a = flag_a; 
+            flag_b = flag_b; 
+            flag_c = flag_c; 
+            flag_d = flag_d; 
+            size = (Int32.to_int size)});;
 
 let get_id3_header_size head =
-  let top_size = 10 in
+  let top_size = 0 in
   let footer_size = 10 in
     if head.flag_b
       then head.size + top_size + footer_size
@@ -49,5 +50,5 @@ let () =
     failwith "usage: input.mp3";
   let filename = Sys.argv.(1) in
   let bits = Bitstring.bitstring_of_file filename in
-  print_id3_header(parse_id3_header bits);;
+  print_id3_header(snd (parse_id3_header bits));;
 
