@@ -28,13 +28,21 @@ let parse_id3_header bits =
            flag_d = flag_d; 
            size = (Int32.to_int size)};;
 
+let get_id3_header_size head =
+  let top_size = 10 in
+  let footer_size = 10 in
+    if head.flag_b
+      then head.size + top_size + footer_size
+      else head.size + top_size;;
+
 let print_id3_header head =
   printf "Version:                     %d.%d\n" head.ma_ver head.mi_ver;
   printf "Flag Unsynchronisation:      %b\n" head.flag_a;
   printf "Flag Extended header:        %b\n" head.flag_b;
   printf "Flag Experimental indicator: %b\n" head.flag_c;
   printf "Flag Footer present:         %b\n" head.flag_d;
-  printf "Header Size:                 %d\n" head.size;;
+  printf "Header Size:                 %d\n" head.size;
+  printf "Full Size:                   %d\n" (get_id3_header_size head);;
 
 let () =
   if Array.length Sys.argv <= 1 then
