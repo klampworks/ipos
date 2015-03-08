@@ -30,7 +30,7 @@ let parse_id3_header bits =
             size = (Int32.to_int size)});;
 
 let get_id3_header_size head =
-  let top_size = 0 in
+  let top_size = 10 in
   let footer_size = 10 in
     if head.flag_b
       then head.size + top_size + footer_size
@@ -50,5 +50,11 @@ let () =
     failwith "usage: input.mp3";
   let filename = Sys.argv.(1) in
   let bits = Bitstring.bitstring_of_file filename in
-  print_id3_header(snd (parse_id3_header bits));;
+  let res = parse_id3_header bits in
+  print_id3_header(snd (res));
+  Bitstring.bitstring_to_file  
+    (Bitstring.dropbits ((get_id3_header_size (snd res)) * 8) bits) 
+    "out.mp3";
+
+  ;
 
