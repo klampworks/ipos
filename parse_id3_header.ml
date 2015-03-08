@@ -19,7 +19,14 @@ let parse_id3_header bits =
     flag_c        : 1; (* Experimental indicator *)
     flag_d        : 1; (* Footer present *)
     _             : 4;
-    size          : 32 : bigendian
+    one : 7;
+    _ : 1;
+    two : 7;
+    _ : 1;
+    thr : 7;
+    _ : 1;
+    fou : 7;
+    _ : 1
     } -> (bits, 
           { ma_ver = major_version; 
             mi_ver = minor_version; 
@@ -27,7 +34,7 @@ let parse_id3_header bits =
             flag_b = flag_b; 
             flag_c = flag_c; 
             flag_d = flag_d; 
-            size = (Int32.to_int size)});;
+            size = (fou lor (thr lsl 7) lor (two lsl (7*2)) lor (one lsl (7*3)) )});;
 
 let get_id3_header_size head =
   let top_size = 10 in
