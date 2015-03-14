@@ -9,6 +9,15 @@ type id3_header = {
   flag_d : bool;
   size : int}
 
+let int_of_synchsafe i =
+  let rec h inn acc mask =
+    if mask = 0
+      then acc
+      else 
+        h inn ((acc lsr 1) lor (inn land mask)) (mask lsr 8)
+  in
+    h (Int32.to_int i) 0 0x7F000000;;
+          
 let parse_id3_header bits =
   bitmatch bits with
   | { ("ID3") : 3*8 : string;
@@ -19,14 +28,7 @@ let parse_id3_header bits =
     flag_c        : 1; (* Experimental indicator *)
     flag_d        : 1; (* Footer present *)
     _             : 4;
-    one : 7;
-    _ : 1;
-    two : 7;
-    _ : 1;
-    thr : 7;
-    _ : 1;
-    fou : 7;
-    _ : 1
+    s : 32 : bind (int_of_synchsafe s), bigendian
     } -> (bits, 
           { ma_ver = major_version; 
             mi_ver = minor_version; 
@@ -34,7 +36,7 @@ let parse_id3_header bits =
             flag_b = flag_b; 
             flag_c = flag_c; 
             flag_d = flag_d; 
-            size = (fou lor (thr lsl 7) lor (two lsl (7*2)) lor (one lsl (7*3)) )});;
+            size = s});;
 
 let get_id3_header_size head =
   let top_size = 10 in
