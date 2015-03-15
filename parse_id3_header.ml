@@ -54,6 +54,9 @@ let print_id3_header head =
   printf "Header Size:                 %d\n" head.size;
   printf "Full Size:                   %d\n" (get_id3_header_size head);;
 
+let chop_header head bits =
+  Bitstring.dropbits ((get_id3_header_size (snd head)) * 8) bits;; 
+  
 let () =
   if Array.length Sys.argv <= 1 then
     failwith "usage: input.mp3";
@@ -62,7 +65,7 @@ let () =
   let res = parse_id3_header bits in
   print_id3_header(snd (res));
   Bitstring.bitstring_to_file  
-    (Bitstring.dropbits ((get_id3_header_size (snd res)) * 8) bits) 
+    (chop_header res bits)
     "out.mp3";
 
   ;
